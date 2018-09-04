@@ -1,0 +1,168 @@
+---
+title: "Sex_age_mfedu"
+output: html_document
+---
+
+
+```{r include=FALSE}
+library(ggplot2)
+library(reshape2)
+require(utils)
+library(scales)
+source("/home/sshanmugan/scripts/summarySE.R")
+```
+
+
+```{r include=FALSE}
+data <- read.csv("/data/jux/BBL/projects/exec_extern_sex/inputData/data_agg/nback_n1153_from1601_20180829.csv")
+data$sex01 <- as.factor(data$sex01)
+```
+
+
+```{r include=FALSE}
+yvar="externalizing_4factorv2"
+data1 <- subset(data, select=c("scanid", yvar, "ageInYears", "sex01", "medu1"))
+data1["yvar"] <- data1[,2]
+data1<- subset(data1, yvar != "NA")
+data1<- subset(data1, medu1 != "NA") #n=1138
+```
+
+#No sex x maternal education interaction on externalizing symptoms, medu -> fewer symptoms 
+Using bifactor scores. 
+```{r echo=FALSE}
+full.model <- lm(yvar ~ sex01*medu1 + sex01 + medu1 + ageInYears, data=data1)
+summary(full.model)
+
+full.model <- lm(yvar ~  sex01 + medu1 + ageInYears, data=data1)
+summary(full.model)
+
+ggplot(data1, aes(x=medu1, y=yvar, fill=sex01, color=sex01)) +
+  geom_point( stat="identity", position="jitter") +
+  stat_smooth(method = "lm")
+```
+
+#No interaction between age x sex x medu on externalizing symptoms
+Using bifactor scores. 
+```{r echo=FALSE}
+full.model <- lm(yvar ~ ageInYears + sex01 + ageInYears*sex01*medu1 +medu1, data=data1)
+summary(full.model)
+
+#full.model <- lm(yvar ~ ageInYears + sex01 + ageInYears*sex01 +medu1 + medu1*sex01, data=data1)
+#summary(full.model)
+```
+
+
+
+```{r include=FALSE}
+yvar="externalizing_4factorv2"
+data1 <- subset(data, select=c("scanid", yvar, "ageInYears", "sex01", "fedu1"))
+data1["yvar"] <- data1[,2]
+data1<- subset(data1, yvar != "NA")
+data1<- subset(data1, fedu1 != "NA") #n=1058
+```
+
+#Sex x paternal education interaction on externalizing symptoms 
+Using bifactor scores. Paternal education impact on male (more edu -> fewer externalizing symptoms), but not female.
+```{r echo=FALSE}
+full.model <- lm(yvar ~ sex01*fedu1 + sex01 + fedu1 + ageInYears, data=data1)
+summary(full.model)
+
+ggplot(data1, aes(x=fedu1, y=yvar, fill=sex01, color=sex01)) +
+  geom_point( stat="identity", position="jitter") +
+  stat_smooth(method = "lm") 
+```
+
+```{r echo=FALSE}
+#full.model <- lm(yvar ~  sex01 + fedu1 + ageInYears, data=data1)
+#summary(full.model)
+```
+
+#No interaction between age x sex x fedu on externalizing symptoms
+Using bifactor scores. 
+```{r echo=FALSE}
+full.model <- lm(yvar ~ ageInYears + sex01 + ageInYears*sex01*fedu1 +fedu1, data=data1)
+summary(full.model)
+
+full.model <- lm(yvar ~ ageInYears + sex01 + ageInYears*sex01 + fedu1*sex01 + fedu1, data=data1)
+summary(full.model)
+
+full.model <- lm(yvar ~ ageInYears + sex01 + ageInYears*sex01 +fedu1, data=data1)
+summary(full.model)
+```
+
+
+
+
+
+
+
+
+```{r include=FALSE}
+yvar="nbackBehAllDprime"
+data1 <- subset(data, select=c("scanid", yvar, "ageInYears", "sex01", "medu1"))
+data1["yvar"] <- data1[,2]
+data1<- subset(data1, yvar != "NA")
+data1<- subset(data1, medu1 != "NA") #n=1138
+```
+
+#No sex x maternal education interaction on d', medu -> better performance
+Using bifactor scores. 
+```{r echo=FALSE}
+full.model <- lm(yvar ~ sex01*medu1 + sex01 + medu1 + ageInYears, data=data1)
+summary(full.model)
+
+full.model <- lm(yvar ~  sex01 + medu1 + ageInYears, data=data1)
+summary(full.model)
+
+ggplot(data1, aes(x=medu1, y=yvar, fill=sex01, color=sex01)) +
+  geom_point( stat="identity", position="jitter") +
+  stat_smooth(method = "lm")
+
+cor(data1$ageInYears, data1$medu1)
+```
+
+#No interaction between age x sex x medu on externalizing symptoms
+Using bifactor scores. 
+```{r echo=FALSE}
+full.model <- lm(yvar ~ ageInYears + sex01 + ageInYears*sex01*medu1 +medu1, data=data1)
+summary(full.model)
+
+#full.model <- lm(yvar ~ ageInYears + sex01 + ageInYears*sex01 +medu1 + medu1*sex01, data=data1)
+#summary(full.model)
+```
+
+
+```{r include=FALSE}
+yvar="nbackBehAllDprime"
+data1 <- subset(data, select=c("scanid", yvar, "ageInYears", "sex01", "fedu1"))
+data1["yvar"] <- data1[,2]
+data1<- subset(data1, yvar != "NA")
+data1<- subset(data1, fedu1 != "NA") #n=1058
+```
+
+#No sex x paternal education interaction on d' (p=0.09) 
+```{r echo=FALSE}
+full.model <- lm(yvar ~ sex01*fedu1 + sex01 + fedu1 + ageInYears, data=data1)
+summary(full.model)
+
+ggplot(data1, aes(x=fedu1, y=yvar, fill=sex01, color=sex01)) +
+  geom_point( stat="identity", position="jitter") +
+  stat_smooth(method = "lm") 
+```
+
+```{r echo=FALSE}
+full.model <- lm(yvar ~  sex01 + fedu1 + ageInYears, data=data1)
+summary(full.model)
+
+cor(data1$ageInYears, data1$fedu1)
+```
+
+#No interaction between age x sex x fedu on d' 
+```{r echo=FALSE}
+full.model <- lm(yvar ~ ageInYears + sex01 + ageInYears*sex01*fedu1 +fedu1, data=data1)
+summary(full.model)
+
+full.model <- lm(yvar ~ ageInYears + sex01 + ageInYears*sex01 + fedu1*sex01 + fedu1, data=data1)
+summary(full.model)
+
+```

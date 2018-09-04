@@ -1,0 +1,216 @@
+---
+title: "Sex x Parental Edu Effect on Externalizing Symptoms n1051"
+output: html_document
+---
+
+Uses ROIs from JNeurosci 2013 paper. Subset created using exclusion criteria from new n1601 data freeze
+
+
+```{r include=FALSE}
+library(ggplot2)
+library(reshape2)
+require(utils)
+library(scales)
+source("/home/sshanmugan/scripts/summarySE.R")
+```
+
+
+```{r include=FALSE}
+data <- read.csv("/data/jux/BBL/projects/exec_extern_sex/inputData/data_agg/nback_n1051_from1601_jneurosciROIs_20180831.csv") #after 4 level exclusion, subsetted for complete data for extern, medu, fedu
+data$sex01 <- as.factor(data$sex01)
+```
+
+
+
+
+
+
+
+list2x <- grep("nback_func", names(data), value = TRUE) #27 RO
+
+namelist <- c(list2x)
+list1a <- c("ace_group", "TD_status")
+list1b <- c("lmp", "e2_pgml", "age", "meanRELrms","acexTD")
+list3 <- c(list1a, list1b)
+
+#part 3: run regression on each connectivity column
+full.model.results_vif<-data.frame(matrix(NA,nrow=length(list3),ncol=length(namelist)))
+colnames(full.model.results_vif)<- namelist
+rownames(full.model.results_vif)<- list3
+
+full.model.results_coeff<-data.frame(matrix(NA,nrow=length(list3),ncol=length(namelist)))
+colnames(full.model.results_coeff)<- namelist
+rownames(full.model.results_coeff)<- list3
+
+full.model.results<-data.frame(matrix(NA,nrow=length(list3),ncol=length(namelist)))
+colnames(full.model.results)<- namelist
+rownames(full.model.results)<- list3
+
+
+
+for (i in 1:length(namelist)){
+  yvar <- namelist[i]
+  newdata <- subset(data3, select=c("pid", "ace_group", "TD_status", yvar, "lmp", "e2_pgml", "age", "nback_meanRELrms", "total_overall"))
+  newdata["yvar"] <- (newdata[,4])
+  newdata <- subset(newdata, yvar != "NA")
+  
+  # xweight <- newdata1$months_no_hormones_121
+  # yweight <- predict(full.model, newdata1, list(wt = xweight),type="response", level=0)
+  # df <- as.data.frame(cbind(xweight, yweight))
+  pl <- ggplot(newdata, aes(x=nback_meanRELrms, y=yvar, ymax=max(yvar)*1.05)) +  
+    geom_point( stat="identity") +
+    stat_smooth(method = "lm") + 
+    ylab(paste(namelist[i])) + 
+    xlab(paste("meanRELrms"))
+  print(pl)
+  
+  
+  
+  try(full.model <- lme(yvar ~ ace_group + TD_status + ace_group*TD_status + lmp + e2_pgml + age + nback_meanRELrms + total_overall, random=list(pid=~1),  data=newdata))
+  vif.lm <- vif.lme(full.model)
+  vif.lm
+  a <- vif.lm["ace_group1"]
+  b <- vif.lm["TD_status1"]
+  c <- vif.lm["lmp"]
+  d <- vif.lm["e2_pgml"]
+  e <- vif.lm["age"]
+  f <- vif.lm["nback_meanRELrms"]
+  g <- vif.lm["ace_group1:TD_status"]
+  
+  
+  full.model.results_vif[1, i] <- a 
+  full.model.results_vif[2, i] <- b
+  full.model.results_vif[3, i] <- c
+  full.model.results_vif[4, i] <- d
+  full.model.results_vif[5, i] <- e
+  full.model.results_vif[6, i] <- f
+  full.model.results_vif[7, i] <- g
+  
+  
+  #coefficients
+  a <- summary(full.model)$tTable[2,1]
+  b <- summary(full.model)$tTable[3,1]
+  c <- summary(full.model)$tTable[4,1]
+  d <- summary(full.model)$tTable[5,1]
+  e <- summary(full.model)$tTable[6,1]
+  f <- summary(full.model)$tTable[7,1]
+  g <- summary(full.model)$tTable[9,1]
+  
+  
+  full.model.results_coeff[1, i] <- a 
+  full.model.results_coeff[2, i] <- b 
+  full.model.results_coeff[3, i] <- c
+  full.model.results_coeff[4, i] <- d
+  full.model.results_coeff[5, i] <- e
+  full.model.results_coeff[6, i] <- f
+  full.model.results_coeff[8, i] <- g
+  
+  
+  
+  #pvalue
+  a <- summary(full.model)$tTable[2,5]
+  b <- summary(full.model)$tTable[3,5]
+  c <- summary(full.model)$tTable[4,5]
+  d <- summary(full.model)$tTable[5,5]
+  e <- summary(full.model)$tTable[6,5]
+  f <- summary(full.model)$tTable[7,5]
+  g <- summary(full.model)$tTable[9,5]
+  
+  full.model.results[1, i] <- a 
+  full.model.results[2, i] <- b 
+  full.model.results[3, i] <- c
+  full.model.results[4, i] <- d
+  full.model.results[5, i] <- e
+  full.model.results[6, i] <- f
+  full.model.results[8, i] <- g
+  
+  lsmeans_data<-lsmeans(full.model, ~ ace_group+ TD_status + lmp + e2_pgml + age + nback_meanRELrms, random=list(pid=~1))
+  sdata <- summary(lsmeans_data)
+  #ace bargraphs
+  pl <- ggplot(sdata, aes(x=ace_group, y=lsmean, fill=TD_status)) +
+    geom_bar(position=position_dodge(), stat="identity", size=0.8, colour="black" ) +
+    geom_errorbar(aes(ymin=lsmean-SE, ymax=lsmean+SE), width=.2, size=0.8, position=position_dodge(.9)) +
+    scale_fill_manual(values=c("white", "grey40")) +
+    ylab(paste(namelist[i])) +
+    xlab(paste("ace_group")) +
+    theme(legend.position="none") +
+    scale_x_discrete(labels=c("Low ACE", "High ACE")) #+
+  #scale_y_continuous(limits = c(0.3, 0.5), oob=rescale_none) 
+  print(pl)
+  
+}
+
+
+
+
+
+```{r include=FALSE}
+yvar="externalizing_4factorv2"
+data1 <- subset(data, select=c("scanid", yvar, "ageInYears", "sex01", "medu1"))
+data1["yvar"] <- data1[,2]
+data1<- subset(data1, yvar != "NA")
+data1<- subset(data1, medu1 != "NA") #n=1138
+```
+
+#No sex x maternal education interaction on externalizing symptoms, medu -> fewer symptoms 
+Using bifactor scores. 
+```{r echo=FALSE}
+full.model <- lm(yvar ~ sex01*medu1 + sex01 + medu1 + ageInYears, data=data1)
+summary(full.model)
+
+full.model <- lm(yvar ~  sex01 + medu1 + ageInYears, data=data1)
+summary(full.model)
+
+ggplot(data1, aes(x=medu1, y=yvar, fill=sex01, color=sex01)) +
+  geom_point( stat="identity", position="jitter") +
+  stat_smooth(method = "lm")
+```
+
+#No interaction between age x sex x medu on externalizing symptoms
+Using bifactor scores. 
+```{r echo=FALSE}
+full.model <- lm(yvar ~ ageInYears + sex01 + ageInYears*sex01*medu1 +medu1, data=data1)
+summary(full.model)
+
+#full.model <- lm(yvar ~ ageInYears + sex01 + ageInYears*sex01 +medu1 + medu1*sex01, data=data1)
+#summary(full.model)
+```
+
+
+
+```{r include=FALSE}
+yvar="externalizing_4factorv2"
+data1 <- subset(data, select=c("scanid", yvar, "ageInYears", "sex01", "fedu1"))
+data1["yvar"] <- data1[,2]
+data1<- subset(data1, yvar != "NA")
+data1<- subset(data1, fedu1 != "NA") #n=1058
+```
+
+#Sex x paternal education interaction on externalizing symptoms 
+Using bifactor scores. Paternal education impact on male (more edu -> fewer externalizing symptoms), but not female.
+```{r echo=FALSE}
+full.model <- lm(yvar ~ sex01*fedu1 + sex01 + fedu1 + ageInYears, data=data1)
+summary(full.model)
+
+ggplot(data1, aes(x=fedu1, y=yvar, fill=sex01, color=sex01)) +
+  geom_point( stat="identity", position="jitter") +
+  stat_smooth(method = "lm") 
+```
+
+```{r echo=FALSE}
+#full.model <- lm(yvar ~  sex01 + fedu1 + ageInYears, data=data1)
+#summary(full.model)
+```
+
+#No interaction between age x sex x fedu on externalizing symptoms
+Using bifactor scores. 
+```{r echo=FALSE}
+full.model <- lm(yvar ~ ageInYears + sex01 + ageInYears*sex01*fedu1 +fedu1, data=data1)
+summary(full.model)
+
+full.model <- lm(yvar ~ ageInYears + sex01 + ageInYears*sex01 + fedu1*sex01 + fedu1, data=data1)
+summary(full.model)
+
+full.model <- lm(yvar ~ ageInYears + sex01 + ageInYears*sex01 +fedu1, data=data1)
+summary(full.model)
+```

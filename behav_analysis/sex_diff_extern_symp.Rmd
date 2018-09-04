@@ -1,0 +1,64 @@
+---
+title: "Sex Differences in Externalizing Symptoms"
+output: html_document
+---
+  
+  ```{r include=FALSE}
+library(ggplot2)
+library(reshape2)
+require(utils)
+library(scales)
+source("/home/sshanmugan/scripts/summarySE.R")
+```
+
+
+```{r include=FALSE}
+data <- read.csv("/data/jux/BBL/projects/exec_extern_sex/inputData/data_agg/nback_n1153_from1601_20180829.csv")
+data$sex01 <- as.factor(data$sex01)
+```
+
+Histogram of age by sex
+
+```{r, echo=FALSE, message=FALSE}
+ggplot(data,aes(x=ageInYears, fill=sex01)) + geom_histogram()+facet_grid(~sex01)
+```
+
+```{r include=FALSE}
+
+yvar="externalizing_4factorv2"
+data1 <- subset(data, select=c("scanid", yvar, "ageInYears", "sex01"))
+data1["yvar"] <- data1[,2]
+data1<- subset(data1, yvar != "NA")
+```
+
+#Sex differences in externalizing symptoms 
+Using bifactor scores. n=1153
+```{r echo=FALSE}
+full.model <- lm(yvar ~ ageInYears + sex01, data=data1)
+summary(full.model)
+```
+
+bar graph of age residualized externalizing by sex
+```{r echo=FALSE, message=FALSE}
+resid1<- as.data.frame(residuals(full.model, type="pearson"))
+names(resid1) <- "resid"
+newdata1 <- cbind(data1, resid1)
+newdata2<-subset(newdata1, select=c("scanid", "sex01", "yvar"))
+mdata <- melt(newdata1, id=c("scanid", "sex01"))
+sdata<- summarySE(mdata, measurevar="value", groupvars="sex01")
+ggplot(sdata, aes(x=sex01, y=value, fill=sex01)) + 
+  geom_bar(position=position_dodge(), stat="identity", size = 0.8, width=0.65) +
+  geom_errorbar(aes(ymin=value-se, ymax=value+se), position=position_dodge(0.65), width=0.15, size=0.8)
+```
+
+
+#Interaction between age and sex on externalizing symptoms
+Using bifactor scores. n=1153
+```{r echo=FALSE}
+full.model <- lm(yvar ~ ageInYears + sex01 + ageInYears*sex01, data=data1)
+summary(full.model)
+
+ggplot(data1, aes(x=ageInYears, y=yvar, fill=sex01, color=sex01)) +
+  geom_point( stat="identity", position="jitter") +
+  stat_smooth(method = "lm") 
+```
