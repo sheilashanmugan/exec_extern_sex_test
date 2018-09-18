@@ -1,0 +1,85 @@
+wbmat1a <- read.csv("/data/jux/BBL/projects/exec_extern_sex/inputData/connectivity/nbackNetworks_264PowerPNC/wbmat1.csv", header=FALSE)
+wbmat1 <- subset(wbmat1a, select="V1")
+names(wbmat1) <- c("within_n1")
+
+wbmat2 <- read.csv("/data/jux/BBL/projects/exec_extern_sex/inputData/connectivity/nbackNetworks_264PowerPNC/wbmat2.csv", header=FALSE)
+wbmat2 <- wbmat2[,colSums(is.na(wbmat2))<nrow(wbmat2)]
+
+wbmat3 <- read.csv("/data/jux/BBL/projects/exec_extern_sex/inputData/connectivity/nbackNetworks_264PowerPNC/wbmat3.csv", header=FALSE)
+wbmat3 <- wbmat3[,colSums(is.na(wbmat3))<nrow(wbmat3)]
+
+wbmat4 <- read.csv("/data/jux/BBL/projects/exec_extern_sex/inputData/connectivity/nbackNetworks_264PowerPNC/wbmat4.csv", header=FALSE)
+wbmat4 <- wbmat4[,colSums(is.na(wbmat4))<nrow(wbmat4)]
+
+wbmat5 <- read.csv("/data/jux/BBL/projects/exec_extern_sex/inputData/connectivity/nbackNetworks_264PowerPNC/wbmat5.csv", header=FALSE)
+wbmat5 <- wbmat5[,colSums(is.na(wbmat5))<nrow(wbmat5)]
+
+wbmat6 <- read.csv("/data/jux/BBL/projects/exec_extern_sex/inputData/connectivity/nbackNetworks_264PowerPNC/wbmat6.csv", header=FALSE)
+wbmat6 <- wbmat6[,colSums(is.na(wbmat6))<nrow(wbmat6)]
+
+wbmat7 <- read.csv("/data/jux/BBL/projects/exec_extern_sex/inputData/connectivity/nbackNetworks_264PowerPNC/wbmat7.csv", header=FALSE)
+wbmat7 <- wbmat7[,colSums(is.na(wbmat7))<nrow(wbmat7)]
+
+wbmat8 <- read.csv("/data/jux/BBL/projects/exec_extern_sex/inputData/connectivity/nbackNetworks_264PowerPNC/wbmat8.csv", header=FALSE)
+wbmat8 <- wbmat8[,colSums(is.na(wbmat8))<nrow(wbmat8)]
+
+wbmat9 <- read.csv("/data/jux/BBL/projects/exec_extern_sex/inputData/connectivity/nbackNetworks_264PowerPNC/wbmat9.csv", header=FALSE)
+wbmat9 <- wbmat9[,colSums(is.na(wbmat9))<nrow(wbmat9)]
+
+wbmat10 <- read.csv("/data/jux/BBL/projects/exec_extern_sex/inputData/connectivity/nbackNetworks_264PowerPNC/wbmat10.csv", header=FALSE)
+wbmat10 <- wbmat10[,colSums(is.na(wbmat10))<nrow(wbmat10)]
+
+wbmat11 <- read.csv("/data/jux/BBL/projects/exec_extern_sex/inputData/connectivity/nbackNetworks_264PowerPNC/wbmat11.csv", header=FALSE)
+wbmat11 <- wbmat11[,colSums(is.na(wbmat11))<nrow(wbmat11)]
+
+wbmat12 <- read.csv("/data/jux/BBL/projects/exec_extern_sex/inputData/connectivity/nbackNetworks_264PowerPNC/wbmat12.csv", header=FALSE)
+wbmat12 <- wbmat12[,colSums(is.na(wbmat12))<nrow(wbmat12)]
+
+wbmat13 <- read.csv("/data/jux/BBL/projects/exec_extern_sex/inputData/connectivity/nbackNetworks_264PowerPNC/wbmat13.csv", header=FALSE)
+wbmat13 <- wbmat13[,colSums(is.na(wbmat13))<nrow(wbmat13)]
+
+wbmat14 <- read.csv("/data/jux/BBL/projects/exec_extern_sex/inputData/connectivity/nbackNetworks_264PowerPNC/wbmat14.csv", header=FALSE)
+wbmat14 <- wbmat14[,colSums(is.na(wbmat14))<nrow(wbmat14)]
+
+names(wbmat2) <- c("n1xn2", "within_n2")
+names(wbmat3) <- c("n1xn3", "n2xn3", "within_n3")
+names(wbmat4) <- c("n1xn4", "n2xn4", "n3xn4", "within_n4")
+names(wbmat5) <- c("n1xn5", "n2xn5", "n3xn5", "n4xn5", "within_n5")
+names(wbmat6) <- c("n1xn6", "n2xn6", "n3xn6", "n4xn6", "n5xn6", "within_n6")
+names(wbmat7) <- c("n1xn7", "n2xn7", "n3xn7", "n4xn7", "n5xn7", "n6xn7", "within_n7")
+names(wbmat8) <- c("n1xn8", "n2xn8", "n3xn8", "n4xn8", "n5xn8", "n6xn8", "n7xn8", "within_n8")
+names(wbmat9) <- c("n1xn9", "n2xn9", "n3xn9", "n4xn9", "n5xn9", "n6xn9", "n7xn9", "n8xn9", "within_n9")
+names(wbmat10) <- c("n1xn10", "n2xn10", "n3xn10", "n4xn10", "n5xn10", "n6xn10", "n7xn10", "n8xn10", "n9xn10", "within_n10")
+names(wbmat11) <- c("n1xn11", "n2xn11", "n3xn11", "n4xn11", "n5xn11", "n6xn11", "n7xn11", "n8xn11", "n9xn11", "n10xn11", "within_n11")
+names(wbmat12) <- c("n1xn12", "n2xn12", "n3xn12", "n4xn12", "n5xn12", "n6xn12", "n7xn12", "n8xn12", "n9xn12", "n10xn12", "n11xn12", "within_n12")
+names(wbmat13) <- c("n1xn13", "n2xn13", "n3xn13", "n4xn13", "n5xn13", "n6xn13", "n7xn13", "n8xn13", "n9xn13", "n10xn13", "n11xn13", "n12xn13", "within_n13")
+names(wbmat14) <- c("n1xn14", "n2xn14", "n3xn14", "n4xn14", "n5xn14", "n6xn14", "n7xn14", "n8xn14", "n9xn14", "n10xn14", "n11xn14", "n12xn14", "n13xn14", "within_n14")
+
+
+between_overall <- read.csv("/data/jux/BBL/projects/exec_extern_sex/inputData/connectivity/nbackNetworks_264PowerPNC/between_overall.csv", header=FALSE)
+names(between_overall) <- c("between_overall")
+
+between_vec <- read.csv("/data/jux/BBL/projects/exec_extern_sex/inputData/connectivity/nbackNetworks_264PowerPNC/between_vec.csv", header=FALSE)
+names(between_vec) <- c("n1xAllOther", "n2xAllOther", "n3xAllOther", "n4xAllOther", "n5xAllOther", "n6xAllOther", "n7xAllOther", "n8xAllOther", "n9xAllOther", "n10xAllOther", "n11xAllOther", "n12xAllOther", "n13xAllOther", "n14xAllOther")
+
+
+
+within_overall <- read.csv("/data/jux/BBL/projects/exec_extern_sex/inputData/connectivity/nbackNetworks_264PowerPNC/within_overall.csv", header=FALSE)
+names(within_overall) <- c("within_overall")
+
+
+total_overall <- read.csv("/data/jux/BBL/projects/exec_extern_sex/inputData/connectivity/nbackNetworks_264PowerPNC/total_overall.csv", header=FALSE)
+names(total_overall) <- c("total_overall")
+
+wbmat_all <-cbind(wbmat1, wbmat2, wbmat3, wbmat4, wbmat5, wbmat6, wbmat7, wbmat8, wbmat9, wbmat10, wbmat11, wbmat12, wbmat13, wbmat14, between_overall, between_vec, within_overall, total_overall)
+
+
+data_ids <- read.csv("/data/jux/BBL/projects/exec_extern_sex/inputData/connectivity/nbackNetworks_264PowerPNC/nbackNetwork_264PowerPNC_paths.csv", header=FALSE)
+data_ids2 <- subset(data_ids, scanid != "6507", select="scanid") #had 262x262 matrix, excluded in matlab
+
+wbmat_done <- cbind(data_ids2, wbmat_all)
+
+
+
+write.csv(wbmat_done, file="/data/jux/BBL/projects/exec_extern_sex/inputData/connectivity/nbackNetworks_264PowerPNC/nbackNetworks_264PowerPNC_bet_within_connectivity.csv")
+

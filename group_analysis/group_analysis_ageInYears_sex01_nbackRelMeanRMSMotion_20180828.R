@@ -1,10 +1,10 @@
 ########PARAMETERS
-subj.data <- read.csv("/data/jux/BBL/projects/exec_extern_sex/inputData/data_agg/nback_n1153_from1601_20180829.csv")
+subj.data <- read.csv("/data/jux/BBL/projects/exec_extern_sex/inputData/data_agg/nback_n1112_from1601_newImgPaths_20180910.csv")
 
 
 ###ALL COVARIATES
-variables<-c("ageInYears", "sex01", "nbackRelMeanRMSMotion") 
-lin.mod<-"~  ageInYears + sex01 + nbackRelMeanRMSMotion"
+variables<-c("externalizing_4factorv2", "ageInYears", "nbackRelMeanRMSMotion") 
+lin.mod<-"~ externalizing_4factorv2 + ageInYears + nbackRelMeanRMSMotion" 
 ###
 
 
@@ -19,6 +19,7 @@ smoothing<-0
 
 cols<-c("bblid",variables,img,imgvc)
 #cat("subsetting data by",subject.include,'\n')
+subj.data$sex01 <- as.factor(subj.data$sex01)
 data.subset<-subj.data[,cols] 
 
 
@@ -117,7 +118,7 @@ cat(rep(1,nrow(X)),sep='\n', append=T, file=filet)
 
 ### COPY MASK AND THIS PROGRAM TO OUTPUT DIRECTORY ###
 #######################
-file.copy("/data/jux/BBL/projects/exec_extern_sex/scripts/group_analysis_ageInYears_sex01_nbackRelMeanRMSMotion_20180828.R",resultsdir)
+file.copy("/data/jux/BBL/projects/exec_extern_sex/scripts/group_analysis/group_analysis_ageInYears_sex01_nbackRelMeanRMSMotion_20180828.R",resultsdir)
 maskout<-paste(resultsdir,"mask.nii.gz",sep="/")
 file.copy(mask,maskout)
 

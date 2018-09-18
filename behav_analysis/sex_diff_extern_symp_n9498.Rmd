@@ -1,5 +1,5 @@
 ---
-title: "Sex Differences in Clinical Data n7053"
+title: "Sex Differences in Externalizing Symptoms n7053"
 output:
   html_document: default
   pdf_document: default
@@ -20,26 +20,27 @@ data$ageInYears <- data$ageAtClinicalAssess1/12
 #make sex 0/1
 data$sex01 <- ifelse(data$sex==1, 0,1)
 data$sex01 <- as.factor(data$sex01)
+data$sex1m1 <- ifelse(data$sex==1, 1,-1)
+data$sex1m1 <- as.factor(data$sex1m1)
 ```
 
 Histogram of age by sex
 
 ```{r, echo=FALSE, message=FALSE}
-ggplot(data,aes(x=ageInYears, fill=sex01)) + geom_histogram()+facet_grid(~sex01)
+ggplot(data,aes(x=ageInYears, fill=sex1m1)) + geom_histogram()+facet_grid(~sex1m1)
 ```
 
 ```{r include=FALSE}
 
 yvar="externalizing_4factorv2"
-data1 <- subset(data, select=c("bblid", yvar, "ageInYears", "sex01"))
+data1 <- subset(data, select=c("bblid", yvar, "ageInYears", "sex1m1"))
 data1["yvar"] <- data1[,2]
 data1<- subset(data1, yvar != "NA")
 ```
 
-#Sex differences in externalizing symptoms 
-Using bifactor scores. One subject is missing symptom data. n=1153
+#Sex differences in externalizing symptoms using bifactor scores. n=7053
 ```{r echo=FALSE}
-full.model <- lm(yvar ~ ageInYears + sex01, data=data1)
+full.model <- lm(yvar ~ ageInYears + sex1m1, data=data1)
 summary(full.model)
 ```
 
@@ -48,32 +49,22 @@ bar graph of age residualized externalizing by sex
 resid1<- as.data.frame(residuals(full.model, type="pearson"))
 names(resid1) <- "resid"
 newdata1 <- cbind(data1, resid1)
-newdata2<-subset(newdata1, select=c("bblid", "sex01", "yvar"))
-mdata <- melt(newdata1, id=c("bblid", "sex01"))
-sdata<- summarySE(mdata, measurevar="value", groupvars="sex01")
-ggplot(sdata, aes(x=sex01, y=value, fill=sex01)) + 
+newdata2<-subset(newdata1, select=c("bblid", "sex1m1", "yvar"))
+mdata <- melt(newdata1, id=c("bblid", "sex1m1"))
+sdata<- summarySE(mdata, measurevar="value", groupvars="sex1m1")
+ggplot(sdata, aes(x=sex1m1, y=value, fill=sex1m1)) + 
   geom_bar(position=position_dodge(), stat="identity", size = 0.8, width=0.65) +
   geom_errorbar(aes(ymin=value-se, ymax=value+se), position=position_dodge(0.65), width=0.15, size=0.8)
 ```
 
-Histogram of externalizing symptoms (bifactor)
 
-```{r, echo=FALSE, message=FALSE}
-ggplot(data1,aes(x=yvar, fill=sex01)) + geom_histogram(position="dodge")
-```
-
-```{r include=FALSE}
-#full.model <- lm(externalizing_4factorv2 ~ ageInYears + sex01 + overall_psychopathology_4factorv2, data=data1)
-#summary(full.model)
-```
-
-#Interaction between age and sex on externalizing symptoms
-Using bifactor scores. One subject is missing symptom data. n=1153
+#Interaction between age and sex on externalizing symptoms using bifactor scores. n=7053
+Using bifactor scores. 
 ```{r echo=FALSE}
-full.model <- lm(yvar ~ ageInYears + sex01 + ageInYears*sex01, data=data1)
+full.model <- lm(yvar ~ ageInYears + sex1m1 + ageInYears*sex1m1, data=data1)
 summary(full.model)
 
-ggplot(data1, aes(x=ageInYears, y=yvar, fill=sex01, color=sex01)) +
+ggplot(data1, aes(x=ageInYears, y=yvar, fill=sex1m1, color=sex1m1)) +
   geom_point( stat="identity", position="jitter") +
   stat_smooth(method = "lm") 
 ```
@@ -83,25 +74,53 @@ ggplot(data1, aes(x=ageInYears, y=yvar, fill=sex01, color=sex01)) +
 ```{r include=FALSE}
 
 yvar="externalizing_corrtraitsv2"
-data1 <- subset(data, select=c("bblid", yvar, "ageInYears", "sex01"))
+data1 <- subset(data, select=c("bblid", yvar, "ageInYears", "sex1m1"))
 data1["yvar"] <- data1[,2]
 data1<- subset(data1, yvar != "NA")
 ```
 
-#Sex differences in externalizing symptoms 
-Using correlated trait scores. One subject is missing symptom data. n=1153
+#Sex differences in externalizing symptoms using correlated trait scores. 
 ```{r echo=FALSE}
-full.model <- lm(yvar ~ ageInYears + sex01, data=data1)
+full.model <- lm(yvar ~ ageInYears + sex1m1, data=data1)
 summary(full.model)
 ```
 
-#Interaction between age and sex on externalizing symptoms
-Using correlated trait scores. One subject is missing symptom data. n=1153
+#Interaction between age and sex on externalizing symptoms using correlated trait scores. 
+Using correlated trait scores. 
 ```{r echo=FALSE}
-full.model <- lm(yvar ~ ageInYears + sex01 + ageInYears*sex01, data=data1)
+full.model <- lm(yvar ~ ageInYears + sex1m1 + ageInYears*sex1m1, data=data1)
 summary(full.model)
 
-ggplot(data1, aes(x=ageInYears, y=yvar, fill=sex01, color=sex01)) +
+ggplot(data1, aes(x=ageInYears, y=yvar, fill=sex1m1, color=sex1m1)) +
+  geom_point( stat="identity", position="jitter") +
+  stat_smooth(method = "lm") 
+```
+
+#############
+
+
+##########################
+```{r include=FALSE}
+
+yvar="wm_z"
+data1 <- subset(data, select=c("bblid", yvar, "ageInYears", "sex1m1"))
+data1["yvar"] <- data1[,2]
+data1<- subset(data1, yvar != "NA") #n6825
+```
+
+#no sex differences in wm_z n=6825
+```{r echo=FALSE}
+full.model <- lm(yvar ~ ageInYears + sex1m1, data=data1)
+summary(full.model)
+```
+
+#no interaction between age and sex on wm_z
+Using correlated trait scores. 
+```{r echo=FALSE}
+full.model <- lm(yvar ~ ageInYears + sex1m1 + ageInYears*sex1m1, data=data1)
+summary(full.model)
+
+ggplot(data1, aes(x=ageInYears, y=yvar, fill=sex1m1, color=sex1m1)) +
   geom_point( stat="identity", position="jitter") +
   stat_smooth(method = "lm") 
 ```

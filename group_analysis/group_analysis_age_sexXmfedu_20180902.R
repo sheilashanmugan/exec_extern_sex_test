@@ -3,16 +3,16 @@ subj.data <- read.csv("/data/jux/BBL/projects/exec_extern_sex/inputData/data_agg
 
 
 ###ALL COVARIATES
-variables<-c( "sex1m1_demean", "fedu1_demean", "ageInYears_demean", "nbackRelMeanRMSMotion_demean") 
-lin.mod<-"~   sex1m1_demean*fedu1_demean + sex1m1_demean + fedu1_demean + ageInYears_demean + nbackRelMeanRMSMotion_demean" 
-int <- "sexXmedu"
+variables<-c( "sex1m1", "fedu1", "ageInYears", "nbackRelMeanRMSMotion") 
+lin.mod<-"~   sex1m1*fedu1 + sex1m1 + fedu1 + ageInYears + nbackRelMeanRMSMotion" 
+int <- "sexXfedu"
 ###
 
 
 #image.exclude<-"nback_excluded"  #imaging exclusion criteria
 img<-"cope.path.2m0"  #this is the column in the RDS where have 
 imgvc<-"varcope.path.2m0"
-mask<-"/data/jux/BBL/projects/exec_extern_sex/inputData/n1601_NbackCoverageMask_20170427.nii.gz" #copied from /data/joy/BBL/studies/pnc/n1601_dataFreeze/neuroimaging/nback/n1601_NbackCoverageMask_20170427.nii.gz
+mask<-"/data/jux/BBL/projects/exec_extern_sex/oldData/n971_frac2back_across_mask.nii.gz" #copied from 
 outroot<-"/data/jux/BBL/projects/exec_extern_sex/results/nback/voxelwise_analyses"
 smoothing<-0
 ##############

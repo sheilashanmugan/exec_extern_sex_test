@@ -1,0 +1,260 @@
+---
+title: "Sex differences across dimensions"
+output: html_document
+---
+
+```{r include=FALSE}
+
+library(ggplot2)
+library(reshape2)
+require(utils)
+library(scales)
+library(visreg)
+
+data <- read.csv("/data/jux/BBL/projects/exec_extern_sex/inputData/data_agg/nback_n1153_from1601_20180829.csv")
+data$sex01 <- as.factor(data$sex01)
+data3<- data
+
+list2a <- grep("corrtraitsv2", names(data), value = TRUE) 
+list2b <- c("mood_4factorv2", "psychosis_4factorv2", "externalizing_4factorv2", "phobias_4factorv2", "overall_psychopathology_4factorv2") 
+list2x <- c(list2a, list2b)
+
+namelist <- c(list2x)
+list1a <- c("ageInYears", "sex01")
+#list1b <- c("age", "motion", "sex1m1xfedu1") #interaction last here
+#list3 <- c(list1a, list1b)
+list3<-list1a
+
+#part 3: run regression on each column
+full.model.results_coeff<-data.frame(matrix(NA,nrow=length(list3),ncol=length(namelist)))
+colnames(full.model.results_coeff)<- namelist
+rownames(full.model.results_coeff)<- list3
+
+full.model.results<-data.frame(matrix(NA,nrow=length(list3),ncol=length(namelist)))
+colnames(full.model.results)<- namelist
+rownames(full.model.results)<- list3
+
+```
+
+
+Corrtraits and bifactor scores, ageInYears + sex01, n1601 
+
+```{r echo=FALSE}
+
+for (i in 1:length(namelist)){
+  yvar <- namelist[i]
+  newdata <- subset(data3, select=c("scanid", "ageInYears", "sex01", yvar))
+  newdata["yvar"] <- (newdata[,4])
+  newdata <- subset(newdata, yvar != "NA")
+  
+  try(full.model <- lm(yvar ~  ageInYears + sex01, data=newdata))
+  
+  #coefficients
+  a <- summary(full.model)$coefficients[2,"Estimate"]
+  b <- summary(full.model)$coefficients[3,"Estimate"]
+  
+  full.model.results_coeff[1, i] <- a 
+  full.model.results_coeff[2, i] <- b 
+  
+  
+  #pvalue
+  a <- summary(full.model)$coefficients[2,"Pr(>|t|)"]
+  b <- summary(full.model)$coefficients[3,"Pr(>|t|)"]
+  
+  full.model.results[1, i] <- a 
+  full.model.results[2, i] <- b 
+  print(yvar)
+  print(summary(full.model))
+  visreg(full.model, "sex01")
+  
+}
+```
+
+
+
+Corrtraits and bifactor scores, ageInYears * sex01, n1601 
+
+```{r echo=FALSE}
+
+list1a <- c("ageInYears", "sex01")
+list1b <- c( "ageXsex") #interaction last here
+list3 <- c(list1a, list1b)
+#list3<-list1a
+
+#part 3: run regression on each column
+full.model.results_coeff<-data.frame(matrix(NA,nrow=length(list3),ncol=length(namelist)))
+colnames(full.model.results_coeff)<- namelist
+rownames(full.model.results_coeff)<- list3
+
+full.model.results<-data.frame(matrix(NA,nrow=length(list3),ncol=length(namelist)))
+colnames(full.model.results)<- namelist
+rownames(full.model.results)<- list3
+
+for (i in 1:length(namelist)){
+  yvar <- namelist[i]
+  newdata <- subset(data3, select=c("scanid", "ageInYears", "sex01", yvar))
+  newdata["yvar"] <- (newdata[,4])
+  newdata <- subset(newdata, yvar != "NA")
+  
+  try(full.model <- lm(yvar ~  ageInYears* sex01, data=newdata))
+  
+  #coefficients
+  a <- summary(full.model)$coefficients[2,"Estimate"]
+  b <- summary(full.model)$coefficients[3,"Estimate"]
+  c <- summary(full.model)$coefficients[4,"Estimate"]
+  
+  full.model.results_coeff[1, i] <- a 
+  full.model.results_coeff[2, i] <- b 
+  full.model.results_coeff[3, i] <- c 
+  
+  
+  
+  #pvalue
+  a <- summary(full.model)$coefficients[2,"Pr(>|t|)"]
+  b <- summary(full.model)$coefficients[3,"Pr(>|t|)"]
+  c <- summary(full.model)$coefficients[4,"Pr(>|t|)"]
+  
+  full.model.results[1, i] <- a 
+  full.model.results[2, i] <- b 
+  full.model.results[3, i] <- c 
+  
+  print(yvar)
+  print(summary(full.model))
+  pl <- ggplot(newdata, aes(x=ageInYears, y=yvar, fill=sex01, color=sex01)) +
+    geom_point( stat="identity", position="jitter") +
+    stat_smooth(method = "lm") +
+    ylab(paste(namelist[i]))
+  print(pl)
+  
+}
+
+```
+
+
+
+
+```{r include=FALSE}
+
+data <- read.csv("/data/jux/BBL/projects/exec_extern_sex/inputData/data_agg/n7053_from9498_20180829.csv")
+data$sex01 <- ifelse(data$sex==1, 0,1)
+data$sex01 <- as.factor(data$sex01)
+data3<- data
+
+list2a <- grep("corrtraitsv2", names(data), value = TRUE) 
+list2b <- c("mood_4factorv2", "psychosis_4factorv2", "externalizing_4factorv2", "phobias_4factorv2", "overall_psychopathology_4factorv2") 
+list2x <- c(list2a, list2b)
+
+namelist <- c(list2x)
+list1a <- c("ageInYears", "sex01")
+#list1b <- c("age", "motion", "sex1m1xfedu1") #interaction last here
+#list3 <- c(list1a, list1b)
+list3<-list1a
+
+#part 3: run regression on each column
+full.model.results_coeff<-data.frame(matrix(NA,nrow=length(list3),ncol=length(namelist)))
+colnames(full.model.results_coeff)<- namelist
+rownames(full.model.results_coeff)<- list3
+
+full.model.results<-data.frame(matrix(NA,nrow=length(list3),ncol=length(namelist)))
+colnames(full.model.results)<- namelist
+rownames(full.model.results)<- list3
+
+
+```
+
+
+
+Corrtraits and bifactor scores, ageInYears * sex01, n9498 
+
+
+```{r echo=FALSE}
+
+for (i in 1:length(namelist)){
+  yvar <- namelist[i]
+  newdata <- subset(data3, select=c("bblid", "ageAtClinicalAssess1", "sex01", yvar))
+  newdata["yvar"] <- (newdata[,4])
+  newdata <- subset(newdata, yvar != "NA")
+  
+  try(full.model <- lm(yvar ~  ageAtClinicalAssess1 + sex01, data=newdata))
+  
+  #coefficients
+  a <- summary(full.model)$coefficients[2,"Estimate"]
+  b <- summary(full.model)$coefficients[3,"Estimate"]
+  
+  full.model.results_coeff[1, i] <- a 
+  full.model.results_coeff[2, i] <- b 
+  
+  
+  #pvalue
+  a <- summary(full.model)$coefficients[2,"Pr(>|t|)"]
+  b <- summary(full.model)$coefficients[3,"Pr(>|t|)"]
+  
+  full.model.results[1, i] <- a 
+  full.model.results[2, i] <- b 
+  print(yvar)
+  print(summary(full.model))
+  visreg(full.model, "sex01")
+  
+}
+
+```
+
+
+
+
+Corrtraits and bifactor scores, ageInYears * sex01, n9498 
+
+
+```{r echo=FALSE}
+
+list1a <- c("age", "sex01")
+list1b <- c( "ageXsex") #interaction last here
+list3 <- c(list1a, list1b)
+#list3<-list1a
+
+#part 3: run regression on each column
+full.model.results_coeff<-data.frame(matrix(NA,nrow=length(list3),ncol=length(namelist)))
+colnames(full.model.results_coeff)<- namelist
+rownames(full.model.results_coeff)<- list3
+
+full.model.results<-data.frame(matrix(NA,nrow=length(list3),ncol=length(namelist)))
+colnames(full.model.results)<- namelist
+rownames(full.model.results)<- list3
+
+for (i in 1:length(namelist)){
+  yvar <- namelist[i]
+  newdata <- subset(data3, select=c("bblid", "ageAtClinicalAssess1", "sex01", yvar))
+  newdata["yvar"] <- (newdata[,4])
+  newdata <- subset(newdata, yvar != "NA")
+  
+  try(full.model <- lm(yvar ~  ageAtClinicalAssess1* sex01, data=newdata))
+  
+  #coefficients
+  a <- summary(full.model)$coefficients[2,"Estimate"]
+  b <- summary(full.model)$coefficients[3,"Estimate"]
+  c <- summary(full.model)$coefficients[4,"Estimate"]
+  
+  full.model.results_coeff[1, i] <- a 
+  full.model.results_coeff[2, i] <- b 
+  full.model.results_coeff[3, i] <- c 
+  
+  
+  
+  #pvalue
+  a <- summary(full.model)$coefficients[2,"Pr(>|t|)"]
+  b <- summary(full.model)$coefficients[3,"Pr(>|t|)"]
+  c <- summary(full.model)$coefficients[4,"Pr(>|t|)"]
+  
+  full.model.results[1, i] <- a 
+  full.model.results[2, i] <- b 
+  full.model.results[3, i] <- c 
+  
+  print(yvar)
+  print(summary(full.model))
+  pl <- ggplot(newdata, aes(x=ageAtClinicalAssess1, y=yvar, fill=sex01, color=sex01)) +
+    geom_point( stat="identity", position="jitter") +
+    stat_smooth(method = "lm") +
+    ylab(paste(namelist[i]))
+  print(pl) 
+}
+```

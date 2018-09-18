@@ -1,0 +1,120 @@
+---
+title: "Age x sex Effect on jneurosci ROIs n1051"
+output: html_document
+---
+
+Uses ROIs from JNeurosci 2013 paper. Subset created using exclusion criteria from new n1601 data freeze
+
+
+```{r include=FALSE}
+library(ggplot2)
+library(reshape2)
+require(utils)
+library(scales)
+library(nlme)
+source("/home/sshanmugan/scripts/summarySE.R")
+#source("/Users/sheilash/Desktop/old_comp/flash_drive/flash_drive/NGG_699/Shire_genetics/r_scripts/summarySE.R")
+```
+
+
+```{r include=FALSE}
+data <- read.csv("/data/jux/BBL/projects/exec_extern_sex/inputData/data_agg/nback_n1051_from1601_jneurosciROIs_20180831.csv") #after 4 level exclusion, subsetted for complete data for extern, medu, fedu
+#data <- read.csv("/Users/sheilash/Desktop/projects/exec_extern_sex/InputData/data_agg/nback_n1051_from1601_jneurosciROIs_20180831.csv")
+data$sex01 <- as.factor(data$sex01)
+
+data$sex1m1 <- ifelse(data$sex=="1", 1,-1)
+data$sex1m1 <- as.factor(data$sex1m1)
+
+data3<-data
+
+```
+
+
+```{r echo=FALSE}
+list2x <- grep("nback_func", names(data), value = TRUE) #27 ROIs
+
+namelist <- c(list2x)
+list1a <- c("age", "sex1m1")
+list1b <- c("motion", "ageXsex1m1") #interaction last here
+list3 <- c(list1a, list1b)
+
+#part 3: run regression on each connectivity column
+#full.model.results_vif<-data.frame(matrix(NA,nrow=length(list3),ncol=length(namelist)))
+#colnames(full.model.results_vif)<- namelist
+#rownames(full.model.results_vif)<- list3
+
+full.model.results_coeff<-data.frame(matrix(NA,nrow=length(list3),ncol=length(namelist)))
+colnames(full.model.results_coeff)<- namelist
+rownames(full.model.results_coeff)<- list3
+
+full.model.results<-data.frame(matrix(NA,nrow=length(list3),ncol=length(namelist)))
+colnames(full.model.results)<- namelist
+rownames(full.model.results)<- list3
+
+
+
+for (i in 1:length(namelist)){
+  yvar <- namelist[i]
+  newdata <- subset(data3, select=c("scanid", "ageInYears", "sex1m1", yvar, "nbackRelMeanRMSMotion"))
+  newdata["yvar"] <- (newdata[,4])
+  newdata <- subset(newdata, yvar != "NA")
+  
+  try(full.model <- lm(yvar ~ ageInYears*sex1m1 + ageInYears +nbackRelMeanRMSMotion,  data=newdata))
+
+  #coefficients
+  a <- summary(full.model)$coefficients[2,1]
+  b <- summary(full.model)$coefficients[3,1]
+  c <- summary(full.model)$coefficients[4,1]
+  d <- summary(full.model)$coefficients[5,1]
+ # e <- summary(full.model)$coefficients[6,1]
+  #f <- summary(full.model)$coefficients[7,1]
+  #g <- summary(full.model)$coefficients[9,1]
+  
+  
+  full.model.results_coeff[1, i] <- a 
+  full.model.results_coeff[2, i] <- b 
+  full.model.results_coeff[3, i] <- c
+  full.model.results_coeff[4, i] <- d
+  #full.model.results_coeff[5, i] <- e
+  #full.model.results_coeff[6, i] <- f
+  #full.model.results_coeff[8, i] <- g
+  
+  #pvalue
+  a <- summary(full.model)$coefficients[2,4]
+  b <- summary(full.model)$coefficients[3,4]
+  c <- summary(full.model)$coefficients[4,4]
+  d <- summary(full.model)$coefficients[5,4]
+  #e <- summary(full.model)$coefficients[6,4]
+  #f <- summary(full.model)$coefficients[7,4]
+  #g <- summary(full.model)$coefficients[9,4]
+  
+  full.model.results[1, i] <- a 
+  full.model.results[2, i] <- b 
+  full.model.results[3, i] <- c
+  full.model.results[4, i] <- d
+  #full.model.results[5, i] <- e
+  #full.model.results[6, i] <- f
+  #full.model.results[8, i] <- g
+  
+}
+```
+
+
+```{r echo=FALSE}
+full.model.results
+full.model.results_coeff
+
+for (i in 1:length(namelist)){
+  yvar <- namelist[i]
+  newdata <- subset(data3, select=c("scanid", "ageInYears", "sex1m1", yvar, "fedu1", "nbackRelMeanRMSMotion"))
+  newdata["yvar"] <- (newdata[,4])
+  newdata <- subset(newdata, yvar != "NA")
+  
+ pl <- ggplot(newdata, aes(x=fedu1, y=yvar, fill=sex1m1, color=sex1m1)) +
+  geom_point( stat="identity", position="jitter") +
+  stat_smooth(method = "lm") +
+  ylab(paste(namelist[i])) 
+  print(pl)
+}
+```
+
